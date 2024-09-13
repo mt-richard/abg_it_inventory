@@ -1,0 +1,76 @@
+
+const { users } = require('../models');
+const { Op } = require('sequelize');
+
+
+exports.getAllUsers = async () => {
+  try {
+    return await users.findAll();
+  } catch (error) {
+    throw new Error(`Error fetching users: ${error.message}`);
+  } 
+};
+
+exports.getUserByEmailOrUsername = async (email, username) => {
+  try {
+    return await users.findOne({
+      where: {
+        [Op.or]: [
+          { email: email },
+          { username: username }
+        ]
+      }
+    });
+  } catch (error) {
+    throw new Error(`Error fetching user: ${error.message}`);
+  }
+};
+
+exports.getUserById = async (id) => {
+  try {
+    return await users.findOne({where: {user_id: id }});
+  } catch (error) {
+    throw new Error(`Error fetching user: ${error.message}`);
+  }
+};
+
+
+exports.createUser = async (userData) => {
+  try {
+    return await users.create(userData);
+  } catch (error) {
+    throw new Error(`Error cretaing user: ${error.message}`);
+  }
+};
+
+exports.deleteUser = async (id) => {
+  try {
+    let response = await users.findByPk(id);
+    if (!response) {
+      const error = new Error(`user not found with id: ${id}`);
+      error.statusCode = 404; 
+      throw error;
+    }
+    response.status = 'inactive';
+    await response.save();
+    return response;
+  } catch (error) {
+    throw new Error(`Error deleting user: ${error.message}`);
+  }
+};
+
+exports.restoreUser = async (id) => {
+  try {
+    let response = await users.findByPk(id);
+    if (!response) {
+      const error = new Error(`User not found with id: ${id}`);
+      error.statusCode = 404; 
+      throw error;
+    }
+    response.status = 'active';
+    await response.save();
+    return response;
+  } catch (error) {
+    throw new Error(`Error restoring users: ${error.message}`);
+  }
+};
