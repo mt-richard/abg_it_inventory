@@ -74,3 +74,23 @@ exports.restoreUser = async (id) => {
     throw new Error(`Error restoring users: ${error.message}`);
   }
 };
+
+exports.editUser = async (user_id, username, email, password, role, status) => {
+  try {
+    let userData = await users.findByPk(user_id);
+    if (!userData) {
+      const error = new Error(`user not found with id: ${id}`);
+      error.statusCode = 404; 
+      throw error;
+    }
+    userData.username = username;
+    userData.email = email;
+    userData.password = password;
+    userData.role = role;
+    userData.status = status;
+    await userData.save();
+    return userData;
+  } catch (error) {
+    throw new Error(`Error restoring User : ${error.message}`);
+  }
+};

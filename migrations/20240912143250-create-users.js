@@ -24,11 +24,11 @@ module.exports = {
         unique: true
       },
       role: {
-        type: Sequelize.ENUM('admin', 'manager', 'it_person'),  // ENUM for roles
+        type: Sequelize.ENUM('admin', 'manager', 'it_person'), 
         allowNull: false
       },
       status: {
-        type: Sequelize.ENUM('active', 'inactive'),  // ENUM for status
+        type: Sequelize.ENUM('active', 'inactive'), 
         allowNull: false,
         defaultValue: 'active'
       },
