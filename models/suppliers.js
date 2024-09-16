@@ -14,7 +14,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   suppliers.init({
-    sup_id: DataTypes.INTEGER,
+    sup_id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER
+    },
     sup_name: DataTypes.STRING,
     contact: DataTypes.STRING,
     status: DataTypes.STRING,
@@ -25,10 +30,12 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'suppliers',
-    freezeTableName: true,
-    timestamps: false,
-    primaryKey: 'sup_id',
-    underscored: true,
+    timestamps: true, 
+    createdAt: 'created_at',
+    updatedAt: 'updated_at', 
+    underscored: true, 
+    freezeTableName: true,  
+    primaryKey: 'sup_id'
 
   });
   return suppliers;

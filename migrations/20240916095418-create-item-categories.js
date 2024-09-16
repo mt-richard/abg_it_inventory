@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Item_categories', {
+    await queryInterface.createTable('item_categories', {
      
       category_id: {
         allowNull: false,
@@ -11,11 +11,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       category_name: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
       status: {
-        type: Sequelize.ENUM('active', 'inactive'),  // ENUM for status
+        type: Sequelize.ENUM('active', 'inactive'),  
         allowNull: false,
         defaultValue: 'active'
       },
@@ -34,13 +33,9 @@ module.exports = {
       updated_by: {
         type: Sequelize.INTEGER
       },
-      
     });
   },
-
   async down(queryInterface, Sequelize) {
-    // Drop the Item_categories table and the associated ENUM type for status
-    await queryInterface.dropTable('Item_categories');
-    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_Item_categories_status";');  // Drop ENUM type for status
+    await queryInterface.dropTable('item_categories');
   }
 };

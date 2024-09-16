@@ -1,12 +1,11 @@
 
-const { Item_category } = require('../models');
+const { item_categories } = require('../models');
 const { Op } = require('sequelize');
-const item_category = require('../models/item_category');
 
 
 exports.getAllCategory = async () => {
   try {
-    return await Item_category.findAll();
+    return await item_categories.findAll();
   } catch (error) {
     throw new Error(`Error fetching categories: ${error.message}`);
   } 
@@ -14,7 +13,7 @@ exports.getAllCategory = async () => {
 
 exports.getByName = async (name) => {
   try {
-    return await item_category.findOne({ where: { category_name: name } });
+    return await item_categories.findOne({ where: { category_name: name } });
   } catch (error) {
     throw new Error(`Error fetching category: ${error.message}`);
   }
@@ -22,7 +21,7 @@ exports.getByName = async (name) => {
 
 exports.getCategoryById = async (id) => {
   try {
-    return await Item_category.findOne({where: {category_id: id }});
+    return await item_categories.findOne({where: {category_id: id }});
   } catch (error) {
     throw new Error(`Error fetching category: ${error.message}`);
   }
@@ -31,7 +30,7 @@ exports.getCategoryById = async (id) => {
 
 exports.createCategory = async (data) => {
   try {
-    return await Item_category.create(data);
+    return await item_categories.create(data);
   } catch (error) {
     throw new Error(`Error cretaing category: ${error.message}`);
   }
@@ -39,7 +38,7 @@ exports.createCategory = async (data) => {
 
 exports.deleteCategory = async (id) => {
   try {
-    let response = await Item_category.findByPk(id);
+    let response = await item_categories.findByPk(id);
     if (!response) {
       const error = new Error(`Item Category not found with id: ${id}`);
       error.statusCode = 404; 
@@ -55,7 +54,7 @@ exports.deleteCategory = async (id) => {
 
 exports.restoreCategory = async (id) => {
   try {
-    let response = await Item_category.findByPk(id);
+    let response = await item_categories.findByPk(id);
     if (!response) {
       const error = new Error(`Item Category not found with id: ${id}`);
       error.statusCode = 404; 
@@ -71,13 +70,13 @@ exports.restoreCategory = async (id) => {
 
 exports.editCategory = async (id, name, status) => {
   try {
-    let categoryData = await Item_category.findByPk(id);
+    let categoryData = await item_categories.findByPk(id);
     if (!categoryData) {
       const error = new Error(`Item Category not found with id: ${id}`);
       error.statusCode = 404; 
       throw error;
     }
-    categoryData.name = name;
+    categoryData.category_name = name;
     categoryData.status = status;
     await categoryData.save();
     return categoryData;

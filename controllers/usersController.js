@@ -1,6 +1,5 @@
 const  UserService = require('../services/users.service');
-
-// const {users} = require('../models');
+const bcrypt = require('bcrypt'); 
 
 exports.getUsers = async (req, res) => {
     try {
@@ -10,21 +9,32 @@ exports.getUsers = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
-
-exports.createUser = async (req, res) => { 
-    try {
-        const { username, email, password, role, status } = req.body
-        const ifExists = await UserService.getUserByEmailOrUsername(email, username)
-        if (!ifExists) {
-            const response = await UserService.createUser({ username, email, password, role, status})
-            res.json(response);
-        } else {
-            res.status(200).json({message : "User already exists"})
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-}
+  
+  exports.createUser = async (req, res) => { 
+      try {
+          const { username, email, password, role, status } = req.body;
+  
+          const ifExists = await UserService.getUserByEmailOrUsername(email, username);
+          
+          if (!ifExists) {
+              const saltRounds = 10; 
+              const hashedPassword = await bcrypt.hash(password, saltRounds);
+              const response = await UserService.createUser({ 
+                  username, 
+                  email, 
+                  password: hashedPassword, 
+                  role, 
+                  status
+              });
+              res.json(response);
+          } else {
+              res.status(200).json({message : "User already exists"});
+          }
+      } catch (error) {
+          res.status(500).json({ message: error.message });
+      }
+  };
+  
 
 exports.getUserByID = async (req, res) => {
     try {
@@ -91,3 +101,22 @@ exports.getUserByID = async (req, res) => {
       }
     }
   };
+
+  exports.Login = async (req, res) => {
+    try {
+      const { email, password } = req.body
+      const loginData = await UserService.login(email, password);
+      res.status(200).json(loginData);
+    } catch (error) {
+      if (error.statusCode) {
+        res.status(error.statusCode).json({
+          status: error.statusCode,
+          error: error.message,
+          
+        });
+      } else {
+        res.status(500).json({ message: error.message });
+      }
+    }
+
+  }

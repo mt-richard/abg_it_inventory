@@ -3,7 +3,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('locations', {
-
+      
       location_id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,11 +11,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       location_name: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
       status: {
-        type: Sequelize.ENUM('active', 'inactive'),  // ENUM for status
+        type: Sequelize.ENUM('active', 'inactive'),  
         allowNull: false,
         defaultValue: 'active'
       },
@@ -34,13 +33,9 @@ module.exports = {
       updated_by: {
         type: Sequelize.INTEGER
       },
-
     });
   },
-
   async down(queryInterface, Sequelize) {
-    // Drop the locations table and the associated ENUM type for status
     await queryInterface.dropTable('locations');
-    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_locations_status";');  // Drop ENUM type for status
   }
 };

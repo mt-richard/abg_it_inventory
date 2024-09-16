@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Item_category extends Model {
+  class item_categories extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,8 +13,12 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Item_category.init({
-    category_id: DataTypes.INTEGER,
+  item_categories.init({
+    category_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,  
+      autoIncrement: true 
+    },
     category_name: DataTypes.STRING,
     status: DataTypes.STRING,
     created_at: DataTypes.DATE,
@@ -23,11 +27,12 @@ module.exports = (sequelize, DataTypes) => {
     updated_by: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'Item_category',
-    freezeTableName: true,
-    timestamps: false,
-    primaryKey: 'category_id',
-    underscored: true,
+    modelName: 'item_categories',
+    timestamps: true, 
+    createdAt: 'created_at',
+    updatedAt: 'updated_at', 
+    underscored: true, 
+    freezeTableName: true,  
   });
-  return Item_category;
+  return item_categories;
 };
