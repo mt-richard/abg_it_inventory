@@ -6,7 +6,9 @@ const port = 4500
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+app.use(cors());
 
+// main routes
 app.use('/auth', require('./routes/auth'))
 app.use('/users', require('./routes/users'))
 app.use('/locations', require('./routes/locations'))
