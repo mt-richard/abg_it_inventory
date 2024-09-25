@@ -1,14 +1,12 @@
-
-const { locations } = require('../models');
-const { Op } = require('sequelize');
-
+const { locations } = require("../models");
+const { Op } = require("sequelize");
 
 exports.getAllLocations = async () => {
   try {
     return await locations.findAll();
   } catch (error) {
     throw new Error(`Error fetching locations: ${error.message}`);
-  } 
+  }
 };
 
 exports.getByName = async (name) => {
@@ -21,16 +19,19 @@ exports.getByName = async (name) => {
 
 exports.getLocationById = async (id) => {
   try {
-    return await locations.findOne({where: {location_id: id }});
+    return await locations.findOne({ where: { location_id: id } });
   } catch (error) {
     throw new Error(`Error fetching Location: ${error.message}`);
   }
 };
 
-
 exports.createLocation = async (data) => {
   try {
-    return await locations.create(data);
+    const response = await locations.create(data);
+    return {
+      message: "Location added successful",
+      location: response,
+    };
   } catch (error) {
     throw new Error(`Error cretaing Location: ${error.message}`);
   }
@@ -41,12 +42,12 @@ exports.deleteLocation = async (id) => {
     let response = await locations.findByPk(id);
     if (!response) {
       const error = new Error(` Location not found with id: ${id}`);
-      error.statusCode = 404; 
+      error.statusCode = 404;
       throw error;
     }
-    response.status = 'inactive';
+    response.status = "inactive";
     await response.save();
-    return response;
+    return { message: "Location deleted successfull", location: response };
   } catch (error) {
     throw new Error(`Error deleting Location: ${error.message}`);
   }
@@ -57,12 +58,12 @@ exports.restoreLocation = async (id) => {
     let response = await locations.findByPk(id);
     if (!response) {
       const error = new Error(` Location not found with id: ${id}`);
-      error.statusCode = 404; 
+      error.statusCode = 404;
       throw error;
     }
-    response.status = 'active';
+    response.status = "active";
     await response.save();
-    return response;
+    return { message: "Location restored successfull", location: response };
   } catch (error) {
     throw new Error(`Error restoring Location: ${error.message}`);
   }
@@ -73,13 +74,13 @@ exports.editLocation = async (id, name, status) => {
     let LocationData = await locations.findByPk(id);
     if (!LocationData) {
       const error = new Error(` Location not found with id: ${id}`);
-      error.statusCode = 404; 
+      error.statusCode = 404;
       throw error;
     }
     LocationData.location_name = name;
     LocationData.status = status;
     await LocationData.save();
-    return LocationData;
+    return { message: "Location updated successfull", location: LocationData };
   } catch (error) {
     throw new Error(`Error restoring User : ${error.message}`);
   }

@@ -1,31 +1,26 @@
+const { users, otps } = require("../models");
+const { Op } = require("sequelize");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 
-const { users,otps } = require('../models');
-const { Op } = require('sequelize');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
-const crypto = require('crypto');
-
-const JWT_SECRET = process.env.JWT_SECRET || '5ecr3tAbG'; 
-
+const JWT_SECRET = process.env.JWT_SECRET || "5ecr3tAbG";
 
 exports.getAllUsers = async () => {
   try {
     return await users.findAll();
   } catch (error) {
     throw new Error(`Error fetching users: ${error.message}`);
-  } 
+  }
 };
 
 exports.getUserByEmailOrUsername = async (email, username) => {
   try {
     return await users.findOne({
       where: {
-        [Op.or]: [
-          { email: email },
-          { username: username }
-        ]
-      }
+        [Op.or]: [{ email: email }, { username: username }],
+      },
     });
   } catch (error) {
     throw new Error(`Error fetching user: ${error.message}`);
@@ -34,7 +29,7 @@ exports.getUserByEmailOrUsername = async (email, username) => {
 
 exports.getUserById = async (id) => {
   try {
-    return await users.findOne({where: {user_id: id }});
+    return await users.findOne({ where: { user_id: id } });
   } catch (error) {
     throw new Error(`Error fetching user: ${error.message}`);
   }
@@ -42,7 +37,11 @@ exports.getUserById = async (id) => {
 
 exports.createUser = async (userData) => {
   try {
-    return await users.create(userData);
+    const response = await users.create(userData);
+    return {
+      message: "User added successful",
+      user: response,
+    };
   } catch (error) {
     throw new Error(`Error cretaing user: ${error.message}`);
   }
@@ -56,16 +55,15 @@ exports.createOtp = async (otpData) => {
   }
 };
 
-
 exports.deleteUser = async (id) => {
   try {
     let response = await users.findByPk(id);
     if (!response) {
       const error = new Error(`user not found with id: ${id}`);
-      error.statusCode = 404; 
+      error.statusCode = 404;
       throw error;
     }
-    response.status = 'inactive';
+    response.status = "inactive";
     await response.save();
     return response;
   } catch (error) {
@@ -78,10 +76,10 @@ exports.restoreUser = async (id) => {
     let response = await users.findByPk(id);
     if (!response) {
       const error = new Error(`User not found with id: ${id}`);
-      error.statusCode = 404; 
+      error.statusCode = 404;
       throw error;
     }
-    response.status = 'active';
+    response.status = "active";
     await response.save();
     return response;
   } catch (error) {
@@ -89,35 +87,42 @@ exports.restoreUser = async (id) => {
   }
 };
 
-exports.editUser = async (user_id, username, email, password, role, status) => {
+
+exports.editUser = async (user_id, username, email, role, status) => {
   try {
     let userData = await users.findByPk(user_id);
-    
+
     if (!userData) {
       const error = new Error(`user not found with id: ${user_id}`);
-      error.statusCode = 404; 
+      error.statusCode = 404;
       throw error;
     }
-    
-    if (typeof username !== 'string' || typeof email !== 'string' || 
-        typeof password !== 'string' || typeof role !== 'string' || 
-        typeof status !== 'string') {
-      throw new Error('Invalid input: All fields must be strings.');
+
+    if (
+      typeof username !== "string" ||
+      typeof email !== "string" ||
+      // typeof password !== "string" ||
+      typeof role !== "string" ||
+      typeof status !== "string"
+    ) {
+      throw new Error("Invalid input: All fields must be strings.");
     }
     userData.username = username;
     userData.email = email;
-    
-    if (password) {
-      const saltRounds = 10;
-      userData.password = await bcrypt.hash(password, saltRounds);
-    }
-    
+
+    // if (password) {
+    //   const saltRounds = 10;
+    //   userData.password = await bcrypt.hash(password, saltRounds);
+    // }
+
     userData.role = role;
     userData.status = status;
-    
+
     await userData.save();
-    return userData;
-    
+    return {
+      message: 'User Details updated successful',
+      user: userData
+    };
   } catch (error) {
     throw new Error(`Error updating User: ${error.message}`);
   }
@@ -126,43 +131,41 @@ exports.editUser = async (user_id, username, email, password, role, status) => {
 exports.login = async (email, password) => {
   try {
     if (!email || !password || password.length < 5) {
-      throw new Error('All fields are required and password must be at least 5 characters long');
+      throw new Error(
+        "All fields are required and password must be at least 5 characters long"
+      );
     }
 
-    let user = await users.findOne({ 
-      where: { 
-        [Op.and]: [
-          { email: email },
-          { status: 'active' }
-        ]
-      }
+    let user = await users.findOne({
+      where: {
+        [Op.and]: [{ email: email }, { status: "active" }],
+      },
     });
 
     if (!user) {
-      throw new Error('Login failed: User not found or inactive');
+      throw new Error("Login failed: User not found or inactive");
     }
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
-      throw new Error('Login failed: Invalid credentials');
+      throw new Error("Login failed: Invalid credentials");
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role }, 
-      JWT_SECRET,  
-      { expiresIn: '1h' } 
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "1h" }
     );
 
     return {
-      message: 'Login successful',
+      message: "Login successful",
       user: {
         id: user.user_id,
         username: user.username,
         email: user.email,
         role: user.role,
       },
-      token: token  
+      token: token,
     };
-    
   } catch (error) {
     throw new Error(`Error during login: ${error.message}`);
   }
@@ -177,30 +180,29 @@ exports.getUserByEmail = async (data) => {
 };
 
 const generateOTP = () => {
-  return crypto.randomInt(10000000, 99999999).toString(); 
+  return crypto.randomInt(10000000, 99999999).toString();
 };
-
 
 exports.sendOTP = async (email) => {
   try {
     const verifyEmail = await exports.getUserByEmail(email);
     if (!verifyEmail) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
 
     const otp = generateOTP();
     const otpExpiry = new Date();
-    otpExpiry.setHours(otpExpiry.getHours() + 1); 
+    otpExpiry.setHours(otpExpiry.getHours() + 1);
 
     // Store the OTP and its expiry in the OTP table, linked to the user’s email
     await exports.createOtp({
-      email:email,        
-      otp_value: otp,         
-      expiry:otpExpiry,    
+      email: email,
+      otp_value: otp,
+      expiry: otpExpiry,
     });
 
     await sendOTPEmail(email, otp);
-    return { success: true, message: 'OTP sent successfully' };
+    return { success: true, message: "OTP sent successfully" };
   } catch (error) {
     throw new Error(`Error sending OTP: ${error.message}`);
   }
@@ -209,74 +211,71 @@ exports.sendOTP = async (email) => {
 const sendOTPEmail = async (email, otp) => {
   try {
     let transporter = nodemailer.createTransport({
-      service: 'Gmail', 
+      service: "Gmail",
       auth: {
-        user: 'richardtuyishime43@gmail.com', 
-        pass: 'gptwgtlgjnzpbfyi', 
+        user: "richardtuyishime43@gmail.com",
+        pass: "gptwgtlgjnzpbfyi",
       },
-      logger: true,  
-      debug: true 
+      logger: true,
+      debug: true,
     });
 
     let mailOptions = {
-      from: 'richardtuyishime43@gmail.com', 
-      to: email, 
-      subject: 'Your OTP Code', 
-      text: `Your OTP code is ${otp}`, 
-      html: `<p>Your OTP code is <strong>${otp}</strong></p>`, 
+      from: "richardtuyishime43@gmail.com",
+      to: email,
+      subject: "Your OTP Code",
+      text: `Your OTP code is ${otp}`,
+      html: `<p>Your OTP code is <strong>${otp}</strong></p>`,
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('OTP email sent successfully');
+    console.log("OTP email sent successfully");
   } catch (error) {
     throw new Error(`Error sending email: ${error.message}`);
   }
 };
 
-
 exports.validateOTP = async (email, inputOTP) => {
   try {
     const otpRecord = await otps.findOne({ where: { email } });
     if (!otpRecord) {
-      throw new Error('OTP not found for this email');
+      throw new Error("OTP not found for this email");
     }
 
     const { otp_value, expiry } = otpRecord;
 
     if (otp_value !== inputOTP) {
-      throw new Error('Invalid OTP');
+      throw new Error("Invalid OTP");
     }
 
     if (new Date() > expiry) {
-      throw new Error('OTP has expired');
+      throw new Error("OTP has expired");
     }
 
     await otps.destroy({ where: { email } });
-    return { success: true, message: 'OTP validated successfully' };
+    return { success: true, message: "OTP validated successfully" };
   } catch (error) {
     throw new Error(`Error validating OTP: ${error.message}`);
   }
 };
 
-
 const removeExpiredOTPs = async () => {
   try {
     await otps.destroy({ where: { expiry: { [Op.lt]: new Date() } } });
-    console.log('Expired OTPs cleaned up.');
+    console.log("Expired OTPs cleaned up.");
   } catch (error) {
-    console.error('Error cleaning up expired OTPs:', error.message);
+    console.error("Error cleaning up expired OTPs:", error.message);
   }
 };
 
-setInterval(removeExpiredOTPs, 60 * 60 * 1000); 
-
+setInterval(removeExpiredOTPs, 60 * 60 * 1000);
 
 exports.resetPassword = async (email, password) => {
   try {
     let response = await exports.getUserByEmail(email);
     if (!response) {
       const error = new Error(`user not found with email: ${id}`);
-      error.statusCode = 404; 
+      error.statusCode = 404;
       throw error;
     }
     // response.password = password;
@@ -286,10 +285,10 @@ exports.resetPassword = async (email, password) => {
     }
     await response.save();
     return {
-      message: 'Password Changed successfully',
-      user: response
+      message: "Password Changed successfully",
+      user: response,
     };
   } catch (error) {
     throw new Error(`Error validating OTP: ${error.message}`);
   }
-}
+};

@@ -30,7 +30,8 @@ exports.getSupplierById = async (id) => {
 
 exports.createSupplier = async (data) => {
   try {
-    return await suppliers.create(data);
+    const response =  await suppliers.create(data);
+    return { message: "Supplier added successfull", supplier: response };
   } catch (error) {
     throw new Error(`Error cretaing supplier: ${error.message}`);
   }
@@ -46,7 +47,7 @@ exports.deleteSupplier = async (id) => {
     }
     response.status = 'inactive';
     await response.save();
-    return response;
+    return { message: "Supplier deleted successfull", supplier: response };
   } catch (error) {
     throw new Error(`Error deleting supplier: ${error.message}`);
   }
@@ -62,7 +63,7 @@ exports.restoreSupplier = async (id) => {
     }
     response.status = 'active';
     await response.save();
-    return response;
+    return { message: "Supplier restored successfull", supplier: response };
   } catch (error) {
     throw new Error(`Error restoring suppliers: ${error.message}`);
   }
@@ -80,7 +81,7 @@ exports.editSupplier = async (id, name, contact, status) => {
     supplierData.contact = contact;
     supplierData.status = status;
     await supplierData.save();
-    return supplierData;
+    return { message: "Supplier updated successfull", supplier: supplierData };
   } catch (error) {
     throw new Error(`Error restoring User : ${error.message}`);
   }

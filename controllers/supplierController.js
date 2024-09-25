@@ -11,10 +11,10 @@ exports.getSuppliers = async (req, res) => {
 
 exports.createSupplier = async (req, res) => { 
     try {
-        const { sup_name, status } = req.body
+        const { sup_name, contact, status } = req.body
         const ifExists = await SupplierService.getByName(sup_name)
         if (!ifExists) {
-            const response = await SupplierService.createSupplier({ sup_name, status})
+            const response = await SupplierService.createSupplier({ sup_name,contact, status})
             res.json(response);
         } else {
             res.status(200).json({message : "Supplier already exists"})

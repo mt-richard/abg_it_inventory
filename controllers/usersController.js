@@ -86,12 +86,11 @@ exports.restoreUser = async (req, res) => {
 exports.editUser = async (req, res) => {
   try {
     const id = req.params.id;
-    const { username, email, password, role, status } = req.body;
+    const { username, email, role, status } = req.body;
     const UserData = await UserService.editUser(
       id,
       username,
       email,
-      password,
       role,
       status
     );

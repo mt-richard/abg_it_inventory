@@ -30,7 +30,8 @@ exports.getCategoryById = async (id) => {
 
 exports.createCategory = async (data) => {
   try {
-    return await item_categories.create(data);
+    const response =  await item_categories.create(data);
+    return { message: "Category added successfull", category: response };
   } catch (error) {
     throw new Error(`Error cretaing category: ${error.message}`);
   }
@@ -46,7 +47,7 @@ exports.deleteCategory = async (id) => {
     }
     response.status = 'inactive';
     await response.save();
-    return response;
+    return { message: "Category deleted successfull", category: response };
   } catch (error) {
     throw new Error(`Error deleting category: ${error.message}`);
   }
@@ -62,7 +63,7 @@ exports.restoreCategory = async (id) => {
     }
     response.status = 'active';
     await response.save();
-    return response;
+    return { message: "Category restored successfull", category: response };
   } catch (error) {
     throw new Error(`Error restoring category: ${error.message}`);
   }
@@ -79,7 +80,7 @@ exports.editCategory = async (id, name, status) => {
     categoryData.category_name = name;
     categoryData.status = status;
     await categoryData.save();
-    return categoryData;
+    return { message: "Category updated successfull", category: categoryData };
   } catch (error) {
     throw new Error(`Error restoring User : ${error.message}`);
   }

@@ -15,7 +15,8 @@ module.exports = {
         allowNull: false
       },
       contact: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true
       },
       status: {
         type: Sequelize.ENUM('active', 'inactive'),  // ENUM for status
