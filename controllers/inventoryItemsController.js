@@ -1,10 +1,9 @@
 const InvItemsService = require('../services/inventory_items.service');
 
-// Controller function remains the same
 exports.getItemsInStock = async (req, res) => {
   try {
     const items = await InvItemsService.getAllItemsInStock();
-    res.json(items); // Send the fetched items directly
+    res.json(items); 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

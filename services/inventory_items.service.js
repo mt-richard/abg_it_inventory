@@ -1,4 +1,4 @@
-const { inventory_items, item_categories, suppliers } = require('../models');
+const { inventory_items, item_categories, locations, suppliers } = require('../models');
 
 exports.getAllItemsInStock = async () => {
   try {
@@ -13,6 +13,11 @@ exports.getAllItemsInStock = async () => {
           model: suppliers,
           as: 'supplier', 
           attributes: ['sup_name'], 
+        },
+        {
+          model: locations,
+          as: 'location_use', 
+          attributes: ['location_name'], 
         },
       ],
     });
@@ -33,8 +38,9 @@ exports.getAllItemsInStock = async () => {
         updated_at: item.updated_at,
         created_by: item.created_by,
         updated_by: item.updated_by,
-        category_name: item.category ? item.category.category_name : null, // Use the extracted category_name
-        sup_name: item.supplier ? item.supplier.sup_name : null // Use the extracted supplier name
+        category_name: item.category ? item.category.category_name : null, 
+        sup_name: item.supplier ? item.supplier.sup_name : null ,
+        location_name: item.location_use ? item.location_use.location_name : null 
       };
     });
   } catch (error) {
