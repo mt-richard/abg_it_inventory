@@ -3,7 +3,6 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('inventory_items', {
-      
       item_id: {
         allowNull: false,
         autoIncrement: true,
@@ -24,6 +23,10 @@ module.exports = {
       },
       description: {
         type: Sequelize.TEXT
+      },
+      item_type: {
+        type: Sequelize.ENUM('asset', 'expense'),
+        allowNull: false,
       },
       quantity: {
         type: Sequelize.INTEGER

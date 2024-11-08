@@ -40,7 +40,8 @@ exports.getAllItemsInStock = async () => {
         updated_by: item.updated_by,
         category_name: item.category ? item.category.category_name : null, 
         sup_name: item.supplier ? item.supplier.sup_name : null ,
-        location_name: item.location_use ? item.location_use.location_name : null 
+        location_name: item.location_use ? item.location_use.location_name : null ,
+        item_type: item.item_type,
       };
     });
   } catch (error) {

@@ -51,8 +51,10 @@ module.exports = (sequelize, DataTypes) => {
         key: 'category_id' 
       }
     },
+    
     item_name: DataTypes.STRING,
     description: DataTypes.TEXT,
+    item_type: DataTypes.ENUM('asset', 'expense'),
     quantity: DataTypes.INTEGER,
     unit: DataTypes.STRING,
     supplier_id: {
@@ -62,6 +64,7 @@ module.exports = (sequelize, DataTypes) => {
         key: 'sup_id'
       }
     },
+
     location: {
       type: DataTypes.INTEGER,
       references: {
