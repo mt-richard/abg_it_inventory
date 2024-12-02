@@ -45,7 +45,12 @@ module.exports = {
         onDelete: 'SET NULL'
       },
       assigned_user: {
-        type: Sequelize.INTEGER
+        type:
+         Sequelize.INTEGER
+      },
+      remark: {
+        type:
+         Sequelize.TEXT
       },
       status: {
         type: Sequelize.ENUM('active', 'inactive'),

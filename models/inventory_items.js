@@ -8,8 +8,6 @@ module.exports = (sequelize, DataTypes) => {
    
     static associate(models) {
 
-
-      
       this.belongsTo(models.item_categories, {
         foreignKey: 'item_category', 
         as: 'category',

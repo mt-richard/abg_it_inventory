@@ -1,3 +1,4 @@
+
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
@@ -9,6 +10,36 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.inventory_items, {
+        foreignKey: 'item_id',
+        as: 'itemId',
+      });      
+      
+      this.belongsTo(models.users, {
+        foreignKey: 'created_by',
+        as: 'createdBy',
+      });
+
+      this.belongsTo(models.users, {
+        foreignKey: 'assigned_user',
+        as: 'assignedUser',
+      });
+
+      this.belongsTo(models.locations, {
+        foreignKey: 'source_location',
+        as: 'sourceLocation',
+      });
+
+      this.belongsTo(models.locations, {
+        foreignKey: 'destination_location',
+        as: 'destLocation',
+      });
+
+      this.belongsTo(models.users, {
+        foreignKey: 'updated_by',
+        as: 'updatedBy',
+      });
+
     }
   }
   stock_movements.init(
@@ -43,6 +74,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       assigned_user: DataTypes.INTEGER,
+      remark: DataTypes.TEXT,
       status: DataTypes.ENUM("active", "inactive"),
       created_at: DataTypes.DATE,
       updated_at: DataTypes.DATE,

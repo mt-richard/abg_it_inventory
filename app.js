@@ -15,6 +15,7 @@ app.use('/locations', require('./routes/locations'))
 app.use('/suppliers', require('./routes/suppliers'))
 app.use('/item_category', require('./routes/item_category'))
 app.use('/inventory_items', require('./routes/inventory_items'))
+app.use('/stock_movement', require('./routes/stock_movement'))
 
 app.get('/', (req, res) =>{
     res.send('Welcome to ABG I.T Inventory MS API.');
