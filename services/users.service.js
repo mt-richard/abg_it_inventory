@@ -214,7 +214,7 @@ const sendOTPEmail = async (email, otp) => {
       service: "Gmail",
       auth: {
         user: "richardtuyishime43@gmail.com",
-        pass: "gptwgtlgjnzpbfyi",
+        pass: "Gmail.com250",
       },
       logger: true,
       debug: true,
