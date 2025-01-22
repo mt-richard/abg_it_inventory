@@ -10,15 +10,39 @@ exports.getItemsMovements = async (req, res) => {
 };
 
 
+// exports.createStockMovement = async (req, res) => { 
+//     try {
+//         const { item_id, quantity, movement_type, source_location, destination_location, assigned_user, movement_date, remark, status } = req.body
+//         const response = await StockMovementService.createItemsMovement({ item_id, quantity, movement_type, source_location, destination_location, assigned_user, movement_date, remark, status})
+//         res.json(response);
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// }
+
 exports.createStockMovement = async (req, res) => { 
-    try {
-        const { item_id, quantity, movement_type, source_location, destination_location, assigned_user, movement_date, remark, status } = req.body
-        const response = await StockMovementService.createItemsMovement({ item_id, quantity, movement_type, source_location, destination_location, assigned_user, movement_date, remark, status})
-        res.json(response);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-}
+  try {
+    const { item_id, quantity, movement_type, source_location, destination_location, assigned_user, movement_date, remark, status } = req.body;
+
+    const response = await StockMovementService.createItemsMovement({
+      item_id,
+      quantity,
+      movement_type,
+      source_location,
+      destination_location,
+      assigned_user,
+      movement_date,
+      remark,
+      status
+    });
+
+    // Send the response to the client
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 exports.getMovementById = async (req, res) => {
     try {

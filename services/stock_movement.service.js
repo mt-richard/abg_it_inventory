@@ -10,6 +10,11 @@ exports.getAllItemsMovement = async () => {
           attributes: ['item_name'], 
         },
         {
+          model: inventory_items,
+          as: 'itemId', 
+          attributes: ['unit'], 
+        },
+        {
           model: users,
           as: 'assignedUser', 
           attributes: ['username'], 
@@ -49,6 +54,7 @@ exports.getAllItemsMovement = async () => {
         created_by: item.created_by,
         updated_by: item.updated_by,
         item_name: item.itemId ? item.itemId.item_name : null, 
+        item_unit: item.itemId ? item.itemId.unit : null, 
         sourceLocation: item.sourceLocation ? item.sourceLocation.location_name : null ,
         destLocation: item.destLocation ? item.destLocation.location_name : null ,
        
@@ -78,12 +84,45 @@ exports.getByName = async (name) => {
 
 exports.createItemsMovement = async (data) => {
   try {
-    const response =  await stock_movements.create(data);
-    return { message: "Item added successfull", item: response };
+    const { item_id, quantity, movement_type, source_location, destination_location } = data;
+    const inventoryItem = await inventory_items.findOne({ where: { item_id } });
+
+    if (!inventoryItem) {
+      throw new Error('Item not found in inventory');
+    }
+
+    let updatedQuantity = inventoryItem.quantity;
+
+    if (movement_type === 'IN') {
+      updatedQuantity += quantity; 
+    } else if (movement_type === 'OUT') {
+      updatedQuantity -= quantity; 
+      if (updatedQuantity < 0) {
+        throw new Error('Insufficient inventory to process this movement');
+      }
+    }
+
+    if (movement_type === 'TRANSFER') {
+      if (!destination_location) {
+        throw new Error('Destination location must be provided for transfer');
+      }
+
+      inventoryItem.location = destination_location;
+    } else {
+      inventoryItem.quantity = updatedQuantity;
+    }
+
+    await inventoryItem.save();
+
+    const response = await stock_movements.create(data);
+
+    return { message: "Item movement successful", item: response };
   } catch (error) {
-    throw new Error(`Error creating Item: ${error.message}`);
+    throw new Error(`Error creating Item Movement: ${error.message}`);
   }
 };
+
+
 
 exports.deleteMovement = async (id) => {
   try {
