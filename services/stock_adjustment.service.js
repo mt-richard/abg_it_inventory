@@ -12,6 +12,11 @@ exports.getAllAdjustedRecords = async () => {
           attributes: ['item_name'], 
         },
         {
+          model: inventory_items,
+          as: 'itemId', 
+          attributes: ['unit'], 
+        },
+        {
           model: users,
           as: 'adjustedBy', 
           attributes: ['username'], 
@@ -45,6 +50,7 @@ exports.getAllAdjustedRecords = async () => {
         reason_id: item.reason_id,
         status: item.status,
         itemName: item.itemId ? item.itemId.item_name : null, 
+        itemUnit: item.itemId ? item.itemId.unit : null, 
         reasonDet: item.reasonId ? item.reasonId.reason : null, 
         who_adjusted: item.adjustedBy ? item.adjustedBy.username : null, 
         who_rejected: item.rejectedBy ? item.rejectedBy.username : null, 
