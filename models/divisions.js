@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class item_categories extends Model {
+  class divisions extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,6 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.locations, {
+        foreignKey: 'location_id', 
+        as: 'location',
+      });
+
       this.belongsTo(models.users, {
         foreignKey: 'created_by',
         as: 'createdBy',
@@ -22,16 +27,17 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  item_categories.init({
-    category_id: {
+  divisions.init({
+    division_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,  
       autoIncrement: true 
     },
-    category_name: DataTypes.STRING,
-    status: DataTypes.STRING,
+    division_name: DataTypes.STRING,
+    division_code: DataTypes.INTEGER,
+    location_id: DataTypes.INTEGER,
+    status: DataTypes.ENUM('active', 'inactive'),
     created_at: DataTypes.DATE,
-    updated_at: DataTypes.DATE,
     created_by: {
       type: DataTypes.INTEGER,
       references: {
@@ -39,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
         key: 'user_id'
       }
     },
+    updated_at: DataTypes.DATE,
     updated_by: {
       type: DataTypes.INTEGER,
       references: {
@@ -48,12 +55,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'item_categories',
+    modelName: 'divisions',
     timestamps: true, 
     createdAt: 'created_at',
     updatedAt: 'updated_at', 
     underscored: true, 
     freezeTableName: true,  
   });
-  return item_categories;
+  return divisions;
 };

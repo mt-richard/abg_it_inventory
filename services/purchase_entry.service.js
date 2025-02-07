@@ -1,6 +1,5 @@
 const { sequelize, purchase_entry, inventory_items, users, locations, suppliers } = require('../models');
 
-
 exports.getAllPurchases = async () => {
   try {
     const items = await purchase_entry.findAll({
@@ -31,13 +30,9 @@ exports.getAllPurchases = async () => {
           as: 'supplieredBy', 
           attributes: ['sup_name'], 
         },
-       
-         
-        
       ],
     });
 
-    // Transform the items to the desired format
     return items.map(item => {
       return {
         purchase_id: item.purchase_id, 
@@ -81,7 +76,6 @@ exports.getPurchaseById = async (id) => {
   }
 };
 
-
 exports.createPurchaseEntry = async (data) => {
   const transaction = await sequelize.transaction();
 
@@ -91,16 +85,12 @@ exports.createPurchaseEntry = async (data) => {
       throw new Error("Invalid quantity. Must be a positive integer.");
     }
 
-    // If purchase_type is import, calculate unit_price
     let unitPrice = data.unit_price;
     if (data.purchase_type === "import") {
       unitPrice = data.fx_rate * data.fx_amount;
     }
 
-    // Calculate total_price
     const totalPrice = unitPrice * purchaseQty;
-
-    // Generate new ref_no dynamically
     const currentDate = new Date();
     const yearShort = String(currentDate.getFullYear()).slice(-2); 
 
@@ -119,10 +109,8 @@ exports.createPurchaseEntry = async (data) => {
     }
 
     const refNo = `PE${String(lastNumber).padStart(3, "0")}-${yearShort}`;
-
     let newQuantity = 0; 
 
-    // If doc_type is GRN, update inventory quantity
     if (data.doc_type === "GRN") {
       const inventoryItem = await inventory_items.findOne({
         where: { item_id: data.item_id },
@@ -141,7 +129,6 @@ exports.createPurchaseEntry = async (data) => {
       );
     }
 
-    // Create the purchase entry with updated qty_balance
     const purchaseEntry = await purchase_entry.create(
       {
         item_id: data.item_id,
@@ -176,57 +163,3 @@ exports.createPurchaseEntry = async (data) => {
   }
 };
 
-
-
-
-// exports.deleteAdjustment = async (id) => {
-//   try {
-//     let response = await purchase_entry.findByPk(id);
-//     if (!response) {
-//       const error = new Error(` Stock Adjustment not found with id: ${id}`);
-//       error.statusCode = 404; 
-//       throw error;
-//     }
-//     response.status = 'inactive';
-//     await response.save();
-//     return { message: "Adjustment deleted successfull", Adjustment: response };
-//   } catch (error) {
-//     throw new Error(`Error deleting Adjustment: ${error.message}`);
-//   }
-// };
-
-// exports.restoreAdjustment = async (id) => {
-//   try {
-//     let response = await purchase_entry.findByPk(id);
-//     if (!response) {
-//       const error = new Error(` Adjustment not found with id: ${id}`);
-//       error.statusCode = 404; 
-//       throw error;
-//     }
-//     response.status = 'active';
-//     await response.save();
-//     return { message: "Adjustment restored successfull", Adjustment: response };
-//   } catch (error) {
-//     throw new Error(`Error restoring purchase_entry: ${error.message}`);
-//   }
-// };
-
-// exports.editAdjustment = async (id, item_id, quantity, adjust_type, reason, status) => {
-//   try {
-//     let AdjustmentData = await purchase_entry.findByPk(id);
-//     if (!AdjustmentData) {
-//       const error = new Error(` Adjustment not found with id: ${id}`);
-//       error.statusCode = 404; 
-//       throw error;
-//     }
-//     AdjustmentData.item_id = item_id;
-//     AdjustmentData.quantity = quantity;
-//     AdjustmentData.adjust_type = adjust_type;
-//     AdjustmentData.reason = reason;
-//     AdjustmentData.status = status;
-//     await AdjustmentData.save();
-//     return { message: "Adjustment updated successfull", Adjustment: AdjustmentData };
-//   } catch (error) {
-//     throw new Error(`Error restoring User : ${error.message}`);
-//   }
-// };

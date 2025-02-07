@@ -5,6 +5,15 @@ module.exports = (sequelize, DataTypes) => {
   class locations extends Model {
     static associate(models) {
       // define association here
+      this.belongsTo(models.users, {
+        foreignKey: 'created_by',
+        as: 'createdBy',
+      });
+
+      this.belongsTo(models.users, {
+        foreignKey: 'updated_by',
+        as: 'updatedBy',
+      });
     }
   }
 
@@ -18,8 +27,20 @@ module.exports = (sequelize, DataTypes) => {
     status: DataTypes.STRING,
     created_at: DataTypes.DATE,
     updated_at: DataTypes.DATE,
-    created_by: DataTypes.INTEGER,
-    updated_by: DataTypes.INTEGER
+    created_by: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'users', 
+        key: 'user_id'
+      }
+    },
+    updated_by: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'users', 
+        key: 'user_id'
+      }
+    }
   }, {
     sequelize,
     modelName: 'locations',

@@ -11,6 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.users, {
+        foreignKey: 'created_by',
+        as: 'createdBy',
+      });
+
+      this.belongsTo(models.users, {
+        foreignKey: 'updated_by',
+        as: 'updatedBy',
+      });
     }
   }
   suppliers.init({
