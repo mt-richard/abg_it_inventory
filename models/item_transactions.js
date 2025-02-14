@@ -1,7 +1,8 @@
+
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class purchase_entry extends Model {
+  class item_transactions extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,31 +10,41 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.users, {
-        foreignKey: "created_by",
-        as: "createdBy",
-      });
-
       this.belongsTo(models.inventory_items, {
-        foreignKey: "item_id",
-        as: "itemId",
+        foreignKey: 'item_id',
+        as: 'itemId',
+      });      
+      
+      this.belongsTo(models.users, {
+        foreignKey: 'created_by',
+        as: 'createdBy',
       });
 
-     
-      this.belongsTo(models.suppliers, {
-        foreignKey: "supplier_id",
-        as: "supplieredBy",
-      });
+      // this.belongsTo(models.users, {
+      //   foreignKey: 'assigned_user',
+      //   as: 'assignedUser',
+      // });
 
       this.belongsTo(models.locations, {
-        foreignKey: "received_location",
-        as: "receivedLocation",
+        foreignKey: 'location',
+        as: 'Location',
       });
+
+      this.belongsTo(models.divisions, {
+        foreignKey: 'division',
+        as: 'divisionId',
+      });
+
+      this.belongsTo(models.users, {
+        foreignKey: 'updated_by',
+        as: 'updatedBy',
+      });
+
     }
   }
-  purchase_entry.init(
+  item_transactions.init(
     {
-      purchase_id: {
+      transaction_id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -50,33 +61,31 @@ module.exports = (sequelize, DataTypes) => {
           key: "item_id",
         },
       },
-      supplier_id: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: "suppliers",
-          key: "sup_id",
-        },
-      },
       quantity: DataTypes.INTEGER,
       qty_balance: DataTypes.INTEGER,
-      doc_type: DataTypes.ENUM("GRN", "TRN", "ADJ", "REC"),
-      supp_invoice_no: DataTypes.STRING,
-      invoice_date: DataTypes.DATE,
-      delivery_date: DataTypes.DATE,
-      purchase_type: DataTypes.ENUM("local", "import"),
-      received_location: {
+      location: {
         type: DataTypes.INTEGER,
         references: {
           model: "locations",
           key: "location_id",
         },
       },
-      fx_rate: DataTypes.DECIMAL,
-      fx_symbol: DataTypes.STRING,
-      fx_amount: DataTypes.DECIMAL,
-      unit_price: DataTypes.DECIMAL,
-      total_price: DataTypes.DECIMAL,
-      warrant_info: DataTypes.TEXT,
+      division: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "divisions",
+          key: "division_id",
+        },
+      },
+      employee: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "employees",
+          key: "employee_id",
+        },
+      },
+      remark: DataTypes.TEXT,
+      doc_type: DataTypes.ENUM("GRN", "TRN", "ADJ", "REC"),
       status: DataTypes.ENUM("active", "inactive"),
       created_at: DataTypes.DATE,
       updated_at: DataTypes.DATE,
@@ -94,19 +103,18 @@ module.exports = (sequelize, DataTypes) => {
           key: "user_id",
         },
       },
-  
+   
     },
     {
       sequelize,
-      modelName: "purchase_entry",
-      tableName: 'purchase_entries',
+      modelName: "item_transactions",
       timestamps: true,
       createdAt: "created_at",
       updatedAt: "updated_at",
       underscored: true,
-      // freezeTableName: true,
-      primaryKey: "purchase_id",
+      freezeTableName: true,
+      primaryKey: "transaction_id",
     }
   );
-  return purchase_entry;
+  return item_transactions;
 };

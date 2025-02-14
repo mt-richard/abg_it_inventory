@@ -2,9 +2,9 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('purchase_entries', {
-      
-      purchase_id: {
+    await queryInterface.createTable('item_transactions', {
+     
+      transaction_id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -17,20 +17,11 @@ module.exports = {
       item_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'inventory_items',
-          key: 'item_id',
+          model: 'item_categories', 
+          key: 'category_id',
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
-      },
-      supplier_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'suppliers',
-          key: 'sup_id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onUpdate: 'CASCADE', 
+        onDelete: 'SET NULL'  
       },
       quantity: {
         type: Sequelize.INTEGER
@@ -41,22 +32,9 @@ module.exports = {
       doc_type: {
         type: Sequelize.ENUM('GRN', 'TRN', 'REC', 'ADJ'),
         allowNull: false,
-        defaultValue: 'GRN'
+        defaultValue: 'TRN'
       },
-      supp_invoice_no: {
-        type: Sequelize.STRING
-      },
-      invoice_date: {
-        type: Sequelize.DATE
-      },
-      delivery_date: {
-        type: Sequelize.DATE
-      },
-      purchase_type: {
-        type: Sequelize.ENUM('local', 'import'),
-        allowNull: false,
-      },
-      received_location: {
+      location: {
         type: Sequelize.INTEGER,
         references: {
           model: 'locations', 
@@ -65,23 +43,23 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      fx_rate: {
-        type: Sequelize.DECIMAL
+      division: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'divisions', 
+          key: 'division_id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
-      fx_symbol: {
-        type: Sequelize.STRING
+      employee: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: '1'
       },
-      fx_amount: {
-        type: Sequelize.DECIMAL
-      },
-      unit_price: {
-        type: Sequelize.DECIMAL
-      },
-      total_price: {
-        type: Sequelize.DECIMAL
-      },
-      warrant_info: {
-        type: Sequelize.TEXT
+      remark: {
+        type:
+         Sequelize.TEXT
       },
       status: {
         type: Sequelize.ENUM('active', 'inactive'),
@@ -112,10 +90,10 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      
+     
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('purchase_entries');
+    await queryInterface.dropTable('item_transactions');
   }
 };

@@ -102,13 +102,13 @@ exports.createPurchaseEntry = async (data) => {
 
     let lastNumber = 1; 
     if (lastEntry && lastEntry.ref_no) {
-      const match = lastEntry.ref_no.match(/PE(\d+)-(\d{2})/);
+      const match = lastEntry.ref_no.match(/GRN(\d+)-(\d{2})/);
       if (match) {
         lastNumber = parseInt(match[1], 10) + 1;
       }
     }
 
-    const refNo = `PE${String(lastNumber).padStart(3, "0")}-${yearShort}`;
+    const refNo = `GRN${String(lastNumber).padStart(3, "0")}-${yearShort}`;
     let newQuantity = 0; 
 
     if (data.doc_type === "GRN") {
@@ -122,10 +122,12 @@ exports.createPurchaseEntry = async (data) => {
       }
 
       newQuantity = inventoryItem.quantity + purchaseQty;
+      console.log("added qty : ",purchaseQty)
+      console.log("new qty : ",newQuantity)
 
       await inventory_items.update(
-        { quantity: newQuantity },
-        { where: { item_id: data.item_id }, transaction }
+        { quantity: newQuantity},
+        { where: { item_id: data.item_id }, transaction}
       );
     }
 
@@ -146,7 +148,7 @@ exports.createPurchaseEntry = async (data) => {
         total_price: totalPrice,
         doc_type: data.doc_type,
         ref_no: refNo,
-        qty_balance: newQuantity || data.qty_balance, 
+        qty_balance: newQuantity || data.qty_balance,
         warrant_info: data.warrant_info,
         status: data.status || "active",
         created_by: data.created_by,
