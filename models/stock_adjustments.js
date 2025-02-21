@@ -34,6 +34,16 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "reason_id",
         as: "reasonId",
       });
+
+      this.belongsTo(models.locations, {
+        foreignKey: 'location',
+        as: 'Location',
+      });
+
+      this.belongsTo(models.divisions, {
+        foreignKey: 'division',
+        as: 'divisionId',
+      });
     }
   }
   stock_adjustments.init(
@@ -44,6 +54,10 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
+      ref_no: {
+        allowNull: false,
+        type: DataTypes.STRING,
+      },
       item_id: {
         type: DataTypes.INTEGER,
         references: {
@@ -52,7 +66,28 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       quantity: DataTypes.INTEGER,
-      adjust_type: DataTypes.ENUM("IN", "OUT"),
+      qty_balance: DataTypes.INTEGER,
+      location: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "locations",
+          key: "location_id",
+        },
+      },
+      division: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "divisions",
+          key: "division_id",
+        },
+      },
+      employee: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "employees",
+          key: "employee_id",
+        },
+      },
       reason_id: {
         type: DataTypes.INTEGER,
         references: {
@@ -60,6 +95,7 @@ module.exports = (sequelize, DataTypes) => {
           key: "user_id",
         },
       },
+      comment: DataTypes.TEXT,
       adjusted_at: DataTypes.DATE,
       adjusted_by: {
         type: DataTypes.INTEGER,
@@ -69,6 +105,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       status: DataTypes.ENUM("Pending", "Approved", "Rejected"),
+      doc_type: DataTypes.ENUM("GRN", "TRN", "ADJ", "REC"),
       rejected_at: DataTypes.DATE,
       reject_reason: DataTypes.TEXT,
       rejected_by: {

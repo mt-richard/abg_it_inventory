@@ -10,6 +10,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      ref_no: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       item_id: {
         type: Sequelize.INTEGER,
         references: {
@@ -22,9 +26,36 @@ module.exports = {
       quantity: {
         type: Sequelize.INTEGER
       },
-      adjust_type: {
-        type: Sequelize.ENUM('IN', 'OUT'),
+      qty_balance: {
+        type: Sequelize.INTEGER
+      },
+      doc_type: {
+        type: Sequelize.ENUM('GRN', 'TRN', 'REC', 'ADJ'),
         allowNull: false,
+        defaultValue: 'ADJ'
+      },
+      location: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'locations', 
+          key: 'location_id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      },
+      division: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'divisions', 
+          key: 'division_id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      },
+      employee: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: '1'
       },
       reason_id: {
         type: Sequelize.INTEGER,
@@ -34,6 +65,9 @@ module.exports = {
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
+      },
+      comment: {
+        type: Sequelize.TEXT
       },
       adjusted_at: {
         allowNull: false,
@@ -51,7 +85,7 @@ module.exports = {
       status: {
         type: Sequelize.ENUM('Pending', 'Approved', 'Rejected'),
         allowNull: false,
-        defaultValue: 'active'
+        defaultValue: 'Pending'
       },
       rejected_at: {
         type: Sequelize.DATE

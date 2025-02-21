@@ -20,10 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         as: 'createdBy',
       });
 
-      // this.belongsTo(models.users, {
-      //   foreignKey: 'assigned_user',
-      //   as: 'assignedUser',
-      // });
+    
 
       this.belongsTo(models.locations, {
         foreignKey: 'location',

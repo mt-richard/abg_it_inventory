@@ -122,8 +122,8 @@ exports.createPurchaseEntry = async (data) => {
       }
 
       newQuantity = inventoryItem.quantity + purchaseQty;
-      console.log("added qty : ",purchaseQty)
-      console.log("new qty : ",newQuantity)
+      console.log("added qty :",purchaseQty)
+      console.log("new qty :",newQuantity)
 
       await inventory_items.update(
         { quantity: newQuantity},
