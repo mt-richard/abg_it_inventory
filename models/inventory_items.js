@@ -8,9 +8,9 @@ module.exports = (sequelize, DataTypes) => {
    
     static associate(models) {
 
-      this.belongsTo(models.item_categories, {
-        foreignKey: 'item_category', 
-        as: 'category',
+      this.belongsTo(models.sub_categories, {
+        foreignKey: 'category', 
+        as: 'subcategory',
       });
 
       this.belongsTo(models.suppliers, {
@@ -42,11 +42,11 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER
     },
-    item_category: {
+    category: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'item_categories', 
-        key: 'category_id' 
+        model: 'sub_categories', 
+        key: 'sub_cat_id' 
       }
     },
     
